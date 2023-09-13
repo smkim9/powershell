@@ -59,7 +59,5 @@ if($account -eq $null){
 
         $logEntry= "$(get-date) password reset success"
         Add-Content -Path $PasswordLog -value $logentry
-
-
     }
 }

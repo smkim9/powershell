@@ -4,7 +4,7 @@ function New-BulkADUser{
     )
     Import-Module ActiveDirectory 
 
-    $userlist = Import-Csv $CSVFilePath #<Filepath>
+    $userlist = Import-Csv $CSVFilePath #Filepath
 
     foreach($user in $userlist){
         $FirstName = $user.FirstName
@@ -58,6 +58,7 @@ function New-UserInput {
     -Department $Department -Path $OU -AccountPassword (Converto-SecureString $password -AsPlainText -Force) -Enabled $true
 }
 
+#create ou, group, add user to group
 function Set-ADEnvironment{
     Param(
         [string]$OU,
@@ -87,3 +88,59 @@ function Set-ADEnvironment{
 #$OUName = Read-Host "Enter OU Name"
 #$GroupName = Read-Host "Enter Group Name"
 #$UserToAdd = Read-Host "Enter User to Add"
+
+#Fucntion to delete temp files
+function Remove-TempFiles{
+    param(
+        [string[]]$userProfiles,
+        [switch]$Force,
+        [switch]$Verbose
+    )
+    
+    foreach($user in $userProfiles){
+        $tempFolder = Join-Path -Path "C:\Users" -ChildPath $user
+         
+        if(Test-Path -Path $tempFolder -PathType Container){
+            $tempFolderPath = Join-Path -Path $tempFolder -ChildPath "AppData\Local\Temp"
+            if(test-path -Path $tempFolderpath -PathType Container){
+                if($Verbose){
+                    Write-Host "Removing temporary files for user $user"
+                }
+         
+            Remove-Item -Path $tempFolderPath -Recurse -Force -ErrorAction SilentlyContinue
+            if($Verbose){
+                Write-Host "temporary files removed for user $user"
+            }
+        }
+    }
+        else{
+            if($Verbose){
+                Write-Host "No temporary files found for user $user"
+            }
+        }      
+    
+    else{
+        if($Verbose){
+            Write-Host "User profile not found for $User"
+            }
+        }
+    }
+}
+#$UserTempfiles = @("User1","User2")
+#Remove-TempFiles -UserProfiles $UserTempfiles -Force -Verbose
+#Force to remove without confirmatoin, verbose to see progress
+
+#Clear eventlog function
+function Clear-Eventlogs{
+    param(
+        [string[]]$Logs,
+        [switch]$force
+    )
+    foreach($Log in $Logs){
+        if(Get-Eventlog -List | Where-Object {$_.Log -eq $Logs}){
+        Clear-Eventlog -LogName $log -Force
+    }
+}
+}
+#$Eventlogstoclear = @{"application",""}
+#Clear-Eventlogs -Logs $Eventlogstoclear -Force
