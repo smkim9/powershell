@@ -144,3 +144,24 @@ function Clear-Eventlogs{
 }
 #$Eventlogstoclear = @{"application",""}
 #Clear-Eventlogs -Logs $Eventlogstoclear -Force
+
+function Get-SystemHealthCheck{
+    $healthReport = @()
+
+    $diskSpace = Get-WmiObject -Class Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 } | Select-Object DeviceID, FreeSpace, Size
+    $diskSpace | Foreach-Object{
+        $drive = $_.DeviceID
+        $freeSpaceGB = [math]::Round($_.Freespace/1GB,2)
+        $totalSpaceGB = [math]::Round($_.Size/1GB,2)
+        $healthReport += "Drive $drive Free Space: $freespaceGB GB / Total Space: $totalSpaceGB GB"
+    }
+    $memory = Get-WmiObject -Class Win32_OperatingSystem | Select-Object TotalVisibleMemorySize, FreePhysicalMemory
+    $totalMemoryGB = [math]::Round($memory.TotalVisibleMemorySize/1MB , 2)
+    $freeMemoryGB = [math]::Round($memory.FreePhysicalMemory/1MB, 2)
+    $healthReport += "Total Memory: $totalMemoryGB GB / Free Memory: $freeMemoryGB GB"
+
+    return $healthReport
+}
+# $healthReport = Get-SystemHealth
+#Write-Host "System Health Report:"
+#$healthReport | ForEach-Object { Write-Host $_ }
