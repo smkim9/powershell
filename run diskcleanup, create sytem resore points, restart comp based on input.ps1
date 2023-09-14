@@ -1,4 +1,5 @@
- #run diskcleanup, create system restore point, restarts computer based on user input,
+ #run diskcleanup, create system restore point, restarts computer based on user input
+
 $RemoteComp = Read-Host "Enter name of remote computer"
 enable-psremoting
 $Session = New-PSSession -ComputerName $RemoteComp
@@ -49,5 +50,4 @@ else{
 }
 
 Remove-PSSession -Session $Session
-
 

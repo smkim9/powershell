@@ -14,6 +14,7 @@ foreach($user in $UserToUnlock){
     }
 }
 #expand on the script above
+Add-Type -AssemblyName System.Windows.Forms
 
 $passwordLog = "C:\PasswordResetLog.txt"
 $Administrator = [bool](New-Object Security.Principal.WindowsPrincipal ([Security.Principal.WindowsIdentity]::GetCurrent())) | Out-Null
