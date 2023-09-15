@@ -59,7 +59,7 @@ function New-UserInput {
 }
 
 #create ou, group, add user to group
-function Set-ADEnvironment{
+function Set-ADpath{
     Param(
         [string]$OU,
         [string]$Group,
